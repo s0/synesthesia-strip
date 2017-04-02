@@ -23,7 +23,7 @@ sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 try:
     os.unlink(SOCKET_ADDRESS)
 except OSError:
-    if os.path.exists(server_address):
+    if os.path.exists(SOCKET_ADDRESS):
         raise
 
 sock.bind(SOCKET_ADDRESS)
