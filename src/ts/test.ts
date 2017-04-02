@@ -1,12 +1,11 @@
-var net = require('net')
-  , sockfile = '/tmp/led-socket'
-  ;
+import * as net from 'net';
 
-var leds = 60;
+const sockfile = '/tmp/led-socket';
+const leds = 60;
 
-var client = net.connect( { path: sockfile });
+const client = net.connect(sockfile);
 
-buffer = new Buffer(leds * 3);
+const buffer = new Buffer(leds * 3);
 
 // Zero-Out buffer
 for (var i = leds * 3 - 1; i > 0; i--)
