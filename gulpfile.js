@@ -7,7 +7,7 @@ var runSequence = require('run-sequence');
 var tsProject = ts.createProject('src/ts/tsconfig.json');
 
 gulp.task('clean', function() {
-  return gulp.src(['dist'], {read: false})
+  return gulp.src(['build'], {read: false})
         .pipe(clean());
 });
 

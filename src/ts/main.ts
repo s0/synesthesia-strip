@@ -1,11 +1,13 @@
-import * as net from 'net';
+import {AdafruitDotstarsProxyBackend} from "./backends/adafruit-dotstars-proxy";
+import {LEDStripBackend} from "./backends/backends";
 
 const sockfile = '/tmp/led-socket';
 const leds = 60;
 
-const client = net.connect(sockfile);
-
 const buffer = new Buffer(leds * 3);
+const backend: LEDStripBackend = new AdafruitDotstarsProxyBackend(leds, sockfile);
+backend.setupBuffer(buffer);
+
 
 // Zero-Out buffer
 for (var i = leds * 3 - 1; i > 0; i--)
@@ -23,22 +25,13 @@ function sendPattern() {
     buffer[pos*3] = 50;
     buffer[pos*3 + 1] = 20;
     buffer[pos*3 + 2] = 20;
-    client.write(buffer, 'binary');
+    backend.updateStrip();
 }
 
 function start() {
   setInterval(sendPattern, 10);
 }
 
-client
-  .on('connect', start)
-  .on('data', function (data) {
-    console.info('client', 'Data: %s', data.toString());
-  })
-  .on('error', function (err) {
-    console.error('client', err);
-  })
-  .on('end', function () {
-    console.info('client', 'client disconnected');
-  })
-  ;
+backend.addReadyListener(start);
+
+backend.connect();
