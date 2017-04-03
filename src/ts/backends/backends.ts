@@ -1,4 +1,24 @@
-export interface LEDStripBackend {
+export abstract class LEDStripBackend implements LEDStripBackend {
+
+  private readonly readyListeners: (() => void)[] = [];
+  private readonly disconnectedListeners: (() => void)[] = [];
+
+  protected notifyReadyListeners() {
+    this.readyListeners.map(l => l());
+  }
+
+  protected notifyDisconnectedListeners() {
+    this.readyListeners.map(l => l());
+  }
+
+  public addReadyListener(l: () => void) {
+    this.readyListeners.push(l);
+  }
+
+  public addDisconnectedListener(l: () => void) {
+    this.disconnectedListeners.push(l);
+  }
+
   /**
    * This should be called once per backend, before any calls to updateStrip()
    *
@@ -6,19 +26,16 @@ export interface LEDStripBackend {
    * number of bytes equal to 3n (n = number of pixels), where the sequence is
    * [r0, g0, b0, r1, g1, b1, ..., rn-1, gn-1, bn-1]
    */
-  setupBuffer(buffer: Buffer): void;
+  public abstract setupBuffer(buffer: Buffer): void;
 
   /**
    * Connect to the backend (if needed)
    */
-  connect(): void;
-
-  addReadyListener(l: () => void): void;
-  addDisconnectedListener(l: () => void): void;
+  public abstract connect(): void;
 
   /**
    * Use the buffer previously sent via setupBuffer() to update the LEDs
    * display.
    */
-  updateStrip(): void;
+  public abstract updateStrip(): void;
 }

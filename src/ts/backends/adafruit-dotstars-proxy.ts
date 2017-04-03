@@ -5,17 +5,15 @@ import {LEDStripBackend} from "./backends";
  * An LED Backend controller that connects to a running strip-proxy.py
  * that passes on the new strip display
  */
-export class AdafruitDotstarsProxyBackend implements LEDStripBackend {
+export class AdafruitDotstarsProxyBackend extends LEDStripBackend {
 
   private readonly numberOfPixels: number;
   private readonly sockFile: string;
   private buffer: Buffer;
   private socket: net.Socket;
 
-  private readonly readyListeners: (() => void)[] = [];
-  private readonly disconnectedListeners: (() => void)[] = [];
-
   public constructor(numberOfPixels: number, sockFile: string) {
+    super();
     this.numberOfPixels = numberOfPixels;
     this.sockFile = sockFile;
   }
@@ -27,22 +25,13 @@ export class AdafruitDotstarsProxyBackend implements LEDStripBackend {
     this.buffer = buffer;
   }
 
-
-  public addReadyListener(l: () => void): void {
-    this.readyListeners.push(l);
-  }
-
-  public addDisconnectedListener(l: () => void): void {
-    this.disconnectedListeners.push(l);
-  }
-
   public connect() {
     const socket = net.connect(this.sockFile);
     this.socket = socket;
     socket
       .on('connect', () => {
         if (this.socket === socket) {
-          this.readyListeners.map(l => l());
+          this.notifyReadyListeners();
         }
       })
       .on('data', (data) => {
@@ -53,7 +42,7 @@ export class AdafruitDotstarsProxyBackend implements LEDStripBackend {
       })
       .on('end', () => {
         if (this.socket === socket) {
-          this.disconnectedListeners.map(l => l());
+          this.notifyDisconnectedListeners();
         }
       })
       ;
