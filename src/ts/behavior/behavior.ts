@@ -9,15 +9,17 @@ interface Artifact {
   positionSpeed: number;
   life: number;
   lifeSpeed: number;
+  color: Color;
 }
 
-function genRandomArtifact(maxWidth: number): Artifact {
+function genRandomArtifact(maxWidth: number, color: Color): Artifact {
   return {
     width: getRandomArbitrary(maxWidth / 3, maxWidth),
     position: Math.random(),
     positionSpeed: (Math.random() < 0.5 ? 1 : -1) * getRandomArbitrary(0.001, 0.005),
     life: 0,
-    lifeSpeed: getRandomArbitrary(0.001, 0.005)
+    lifeSpeed: getRandomArbitrary(0.001, 0.005),
+    color
   };
 }
 
@@ -87,12 +89,13 @@ export class StripBehavior {
             position: p > 1 ? (p - 1) : p < 0 ? (p + 1) : p,
             positionSpeed: a.positionSpeed,
             life: a.life + a.lifeSpeed,
-            lifeSpeed: a.lifeSpeed
+            lifeSpeed: a.lifeSpeed,
+            color: a.color
           }
         })
         .filter(a => a.life < 1)
 
-    const displayArtifacts = (artifacts: Artifact[], color: Color) =>
+    const displayArtifacts = (artifacts: Artifact[]) =>
       artifacts.map(a => {
         const ledWidth = 1.0 / leds.length;
         const sectionSize = (a.width / 2);
@@ -124,7 +127,7 @@ export class StripBehavior {
             );
           const actualOpacity = artifactOpacity * opacity;
           if (actualOpacity > 0)
-            leds[i] = leds[i].overlay(color, actualOpacity);
+            leds[i] = leds[i].overlay(a.color, actualOpacity);
         }
       });
 
@@ -135,17 +138,17 @@ export class StripBehavior {
 
       // Generate new artifacts
       while (primaryArtifacts.length < 5)
-        primaryArtifacts.push(genRandomArtifact(0.6));
+        primaryArtifacts.push(genRandomArtifact(0.6, this.primaryColor));
       while (secondaryArtifacts.length < 2)
-        secondaryArtifacts.push(genRandomArtifact(0.4));
+        secondaryArtifacts.push(genRandomArtifact(0.4, this.secondaryColor));
 
       // Update artifacts
       primaryArtifacts = tickArtifacts(primaryArtifacts);
       secondaryArtifacts = tickArtifacts(secondaryArtifacts);
 
       // Print Primary Artifacts
-      displayArtifacts(primaryArtifacts, this.primaryColor);
-      displayArtifacts(secondaryArtifacts, this.secondaryColor);
+      displayArtifacts(primaryArtifacts);
+      displayArtifacts(secondaryArtifacts);
 
       // Update Strip
       for (let i = 0; i < leds.length; i++)
