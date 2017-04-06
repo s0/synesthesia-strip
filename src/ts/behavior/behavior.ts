@@ -12,6 +12,12 @@ interface Artifact {
   color: Color;
 }
 
+interface Sparkle {
+  pos: number;
+  life: number;
+  lifeSpeed: number;
+}
+
 function genRandomArtifact(maxWidth: number, color: Color): Artifact {
   return {
     width: getRandomArbitrary(maxWidth / 3, maxWidth),
@@ -48,7 +54,6 @@ export class StripBehavior {
 
     this.primaryColor = new Color(101, 66, 244);
     this.secondaryColor = new Color(244, 66, 212);
-    this.secondaryColor = Colors.White;
 
     // Zero-Out buffer
     for (let i = 0; i < numberOfLeds; i++)
@@ -79,6 +84,8 @@ export class StripBehavior {
 
     let primaryArtifacts: Artifact[] = [];
     let secondaryArtifacts: Artifact[] = [];
+    let sparkles: Sparkle[] = [];
+    let nextSparkle = -1;
 
     const tickArtifacts = (artifacts: Artifact[]) =>
       artifacts
@@ -149,6 +156,33 @@ export class StripBehavior {
       // Print Primary Artifacts
       displayArtifacts(primaryArtifacts);
       displayArtifacts(secondaryArtifacts);
+
+      // Generate new sparkles
+      nextSparkle--;
+      if (nextSparkle === 0) {
+        sparkles.push({
+          pos: Math.random(),
+          life: 0,
+          lifeSpeed: getRandomArbitrary(0.02, 0.06)
+        });
+      } else if (nextSparkle < 0) {
+        nextSparkle = Math.round(getRandomArbitrary(1, 5));
+      }
+
+      // Update sparkles
+      sparkles = sparkles
+        .map(s => ({
+          pos: s.pos,
+          life: s.life + s.lifeSpeed,
+          lifeSpeed: s.lifeSpeed
+        }))
+        .filter(s => s.life < 1);
+
+      sparkles.map(s => {
+        const pixel = Math.min(leds.length - 1, Math.floor(s.pos * leds.length));
+        const opacity = (s.life < 0.5 ? (s.life) : (1-s.life)) * 2;
+        leds[pixel] = leds[pixel].overlay(Colors.White, opacity);
+      })
 
       // Update Strip
       for (let i = 0; i < leds.length; i++)
