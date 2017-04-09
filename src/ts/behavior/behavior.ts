@@ -42,6 +42,7 @@ export class StripBehavior {
 
   private primaryColor: Color;
   private secondaryColor: Color;
+  private sparkleColor: Color;
 
   constructor(numberOfLeds: number, backend: LEDStripBackend) {
     this.numberOfLeds = numberOfLeds;
@@ -52,8 +53,9 @@ export class StripBehavior {
     backend.addReadyListener(this.connected.bind(this));
     backend.addDisconnectedListener(this.disconnected.bind(this));
 
-    this.primaryColor = new Color(101, 66, 244);
-    this.secondaryColor = new Color(244, 66, 212);
+    this.primaryColor = new Color(20, 0, 0);
+    this.secondaryColor = new Color(0, 0, 0);
+    this.sparkleColor = new Color(0, 0, 0);
 
     // Zero-Out buffer
     for (let i = 0; i < numberOfLeds; i++)
@@ -159,14 +161,13 @@ export class StripBehavior {
 
       // Generate new sparkles
       nextSparkle--;
-      if (nextSparkle === 0) {
+      while (nextSparkle <= 0) {
         sparkles.push({
           pos: Math.random(),
           life: 0,
-          lifeSpeed: getRandomArbitrary(0.02, 0.06)
+          lifeSpeed: getRandomArbitrary(0.01, 0.08)
         });
-      } else if (nextSparkle < 0) {
-        nextSparkle = Math.round(getRandomArbitrary(1, 5));
+        nextSparkle = Math.round(getRandomArbitrary(0, 3));
       }
 
       // Update sparkles
@@ -181,7 +182,7 @@ export class StripBehavior {
       sparkles.map(s => {
         const pixel = Math.min(leds.length - 1, Math.floor(s.pos * leds.length));
         const opacity = (s.life < 0.5 ? (s.life) : (1-s.life)) * 2;
-        leds[pixel] = leds[pixel].overlay(Colors.White, opacity);
+        leds[pixel] = leds[pixel].overlay(this.sparkleColor, opacity);
       })
 
       // Update Strip
