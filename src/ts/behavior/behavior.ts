@@ -189,7 +189,7 @@ export class StripBehavior {
         this.setPixel(i, leds[i]);
       this.backend.updateStrip();
     }
-    this.intervalID = setInterval(calculateAndSendPattern, 20);
+    this.intervalID = setInterval(calculateAndSendPattern, 10);
   }
 
 }
