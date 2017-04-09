@@ -1,3 +1,0 @@
-#! /bin/bash
-
-gulp && rsync -av --delete . strawberry-nb:~/synesthesia-strip-rsync
