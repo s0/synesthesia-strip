@@ -8,9 +8,14 @@ import time
 from dotstar import Adafruit_DotStar
 
 numpixels = 60 # Number of LEDs in strip
+strip     = Adafruit_DotStar(numpixels) # Use SPI (pins 10=MOSI, 11=SCLK)
+
+'''
+# Alt Init:
 datapin   = 17
 clockpin  = 18
 strip     = Adafruit_DotStar(numpixels, datapin, clockpin)
+'''
 
 strip.begin()           # Initialize pins for output
 #strip.setBrightness(25)
