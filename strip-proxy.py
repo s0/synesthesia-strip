@@ -40,7 +40,7 @@ BYTES_REQUIRED = numpixels * 3;
 def setStripColours(string):
     for i in xrange(0, numpixels):
         r, g, b = ord(string[i*3]), ord(string[i*3+1]), ord(string[i*3+2])
-        c = (r << 16) + (g << 8) + b
+        c = (r << 8) | (g << 16) | b
         strip.setPixelColor(i, c)
     strip.show() # Refresh strip
 
