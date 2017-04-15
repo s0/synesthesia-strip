@@ -1,3 +1,4 @@
 RGB Light Strip Project for Synesthesia
 
-![architecture](doc/architecture.png)
+This repo has been moved into the main synesthesia repo:
+https://github.com/samlanning/synesthesia/tree/master/strip
